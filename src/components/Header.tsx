@@ -1,12 +1,21 @@
 import React from "react";
-import { Row, Container } from "react-bootstrap";
+import { Row, Container, Form, Col } from "react-bootstrap";
 
 export default function Header() {
   return (
-    <div className="mt-2">
+    <div className="pt-4">
       <Container>
         <h1>Cat Browser</h1>
-        <Row></Row>
+        <Row>
+          <Col md="3" sm="6">
+            <Form.Group controlId="formGridState">
+              <Form.Label>Breed</Form.Label>
+              <Form.Control as="select" defaultValue="Select breed">
+                <option>Select breed</option>
+              </Form.Control>
+            </Form.Group>
+          </Col>
+        </Row>
       </Container>
     </div>
   );
