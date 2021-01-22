@@ -19,7 +19,7 @@ export default function Header({ onSelectBreed, breeds }: HeaderProps) {
         <Col md="3" sm="6">
           <Form.Group controlId="formGridState">
             <Form.Label>Breed</Form.Label>
-            <Form.Control as="select" onChange={selectBreed}>
+            <Form.Control as="select" onChange={selectBreed} disabled={breeds.length === 0}>
               <option value={-1}>Select breed</option>
               {breeds.map((item, index) => (
                 <option key={item.id} value={index}>
