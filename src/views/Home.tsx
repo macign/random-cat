@@ -2,15 +2,19 @@ import React, { useState, useEffect, useReducer } from "react";
 import { Container, Button, Row, Col, Card } from "react-bootstrap";
 import Header from "../components/Header";
 import axios from "axios";
+import Details from "../components/Details";
 
 const api = axios.create({
   baseURL: "https://api.thecatapi.com/v1/",
-  headers: { "x-api-key": "88a31046-1bab-4f4d-a49c-b389ac230e72" },
 });
 
 export interface CatBreed {
   id: string;
   name: string;
+  description: string;
+  origin: string;
+  temperament: string;
+  index: number;
 }
 
 export interface Cat {
@@ -18,6 +22,7 @@ export interface Cat {
   url: string;
   height: number;
   width: number;
+  breeds: CatBreed[];
 }
 
 interface CatsActions {
@@ -38,9 +43,12 @@ const catsReducer = (state: Cat[], action: CatsActions) => {
 
 export default function Home() {
   const [cats, dispatch] = useReducer(catsReducer, []);
+  const [selectedCat, setSelectedCar] = useState<Cat>({ id: "", url: "", height: 0, width: 0, breeds: [] });
   const [breeds, setBreeds] = useState<CatBreed[]>([]);
   const [breed, setBreed] = useState<string | null>(null);
+  const [selectedBreed, setSelectedBreed] = useState<number>(-1);
   const [page, setPage] = useState<number>(1);
+  const [isList, showList] = useState<boolean>(true);
 
   useEffect(() => {
     api
@@ -55,6 +63,7 @@ export default function Home() {
 
   const onSelectBreed = (value: CatBreed) => {
     getCats(value.id);
+    setSelectedBreed(value.index);
   };
 
   const getCats = (id?: string) => {
@@ -79,13 +88,32 @@ export default function Home() {
       });
   };
 
+  const onViewDetails = (cat: Cat) => {
+    showList(false);
+    setSelectedCar(cat);
+  };
+
+  const onBack = () => {
+    showList(true);
+  };
+
+  const showCatList = () => (
+    <div>
+      <Header onSelectBreed={onSelectBreed} breeds={breeds} defaultValue={selectedBreed ?? -1} />
+      <Row>{breed === null ? <Col className="col-md-3 col-sm-6 col-12 mb-2">No cats available</Col> : showCats()}</Row>
+      <Button variant="success" onClick={() => getCats()} disabled={breed === null}>
+        Load More
+      </Button>
+    </div>
+  );
+
   const showCats = () =>
     cats.map((item, index) => (
       <Col className="col-md-3 col-sm-6 col-12 mb-2" key={index}>
         <Card>
           <Card.Img variant="top" src={item.url} height="300" />
           <Card.Body>
-            <Button variant="primary" as={Col}>
+            <Button variant="primary" as={Col} onClick={() => onViewDetails(item)}>
               View Details
             </Button>
           </Card.Body>
@@ -95,13 +123,7 @@ export default function Home() {
 
   return (
     <div className="pt-4">
-      <Container>
-        <Header onSelectBreed={onSelectBreed} breeds={breeds} />
-        <Row>{breed === null ? <Col className="col-md-3 col-sm-6 col-12 mb-2">No cats available</Col> : showCats()}</Row>
-        <Button variant="success" onClick={() => getCats()} disabled={breed === null}>
-          Load More
-        </Button>
-      </Container>
+      <Container>{isList ? showCatList() : <Details cat={selectedCat} onBack={onBack} />}</Container>
     </div>
   );
 }
