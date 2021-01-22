@@ -98,7 +98,7 @@ export default function Home() {
       <Container>
         <Header onSelectBreed={onSelectBreed} breeds={breeds} />
         <Row>{breed === null ? <Col className="col-md-3 col-sm-6 col-12 mb-2">No cats available</Col> : showCats()}</Row>
-        <Button variant="success" onClick={() => getCats()}>
+        <Button variant="success" onClick={() => getCats()} disabled={breed === null}>
           Load More
         </Button>
       </Container>
